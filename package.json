@@ -6,7 +6,7 @@
   "dependencies": {
     "cheerio": "latest",
     "express": "latest",
-    "mkdirp": "lastest",
+    "mkdirp": "latest",
     "prompt": "latest",
     "request": "latest"
   }
