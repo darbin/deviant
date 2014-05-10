@@ -1,0 +1,13 @@
+{
+  "name": "deviant",
+  "version": "0.0.1",
+  "main": "deviant.js",
+  "author": "Subnormal",
+  "dependencies": {
+    "cheerio": "latest",
+    "express": "latest",
+    "mkdirp": "lastest",
+    "prompt": "latest",
+    "request": "latest"
+  }
+}
