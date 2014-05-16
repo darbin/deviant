@@ -4,6 +4,7 @@
   "main": "deviant.js",
   "author": "Subnormal",
   "dependencies": {
+    "async": "latest",
     "cheerio": "latest",
     "express": "latest",
     "mkdirp": "latest",

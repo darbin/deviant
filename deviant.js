@@ -1,3 +1,4 @@
+var async = require('async');
 var request = require('request');
 var cheerio = require('cheerio');
 var mkdirp = require('mkdirp');
@@ -8,7 +9,12 @@ if (!fs.existsSync('images')) {
 	mkdirp('images');
 }
 
-function scrape(url, redditor) {
+var dload = async.queue(function (task, callback) {
+	request(task.url).pipe(fs.createWriteStream(task.name));
+	callback();
+}, 2);
+
+function scrape(url, redditor) { // TODO: Need new way of scraping, see http://imgur.com/a/0KoeX
 	if (!fs.existsSync('images/' + redditor)) {
 		mkdirp('images/' + redditor);
 	}
@@ -16,8 +22,11 @@ function scrape(url, redditor) {
 	if (url.substr(url.length - 4) == '.png' || url.substr(url.length - 4) == '.jpg' || url.substr(url.length - 4) == '.gif') {
 		console.log("Downloading...");
 		var name = 'images/' + redditor + '/' + url.substr(19);
-		request(url).pipe(fs.createWriteStream(name)).on('close', function () {
+		/*request(url).pipe(fs.createWriteStream(name)).on('close', function () {
 			console.log("Done!");
+		});*/
+		dload.push({name: name, url: url}, function (err) {
+			console.log('Done!');
 		});
 	} else {
 		request(url, function (err, res, html) {
@@ -28,6 +37,7 @@ function scrape(url, redditor) {
 					console.log("Downloading...");
 
 					for (var i = 0; i < posts.length; i++) {
+
 						var obj = posts[i],
 							href = obj.attribs.href.substring(0, obj.attribs.href.length - 2),
 							ext = href.substr(href.length - 4),
@@ -39,11 +49,14 @@ function scrape(url, redditor) {
 						}
 
 						var x = 0;
-						request('http:' + href).pipe(fs.createWriteStream(name)).on('close', function () {
+						/*request('http:' + href).pipe(fs.createWriteStream(name)).on('close', function () {
 							x++;
 							if (x == posts.length) {
 								console.log("Done!");
 							}
+						});*/
+						dload.push({url: 'http:' + href, name: name}, function (err) {
+							console.log('Done!');
 						});
 					}
 				} else {
@@ -64,11 +77,14 @@ function scrape(url, redditor) {
 						}
 
 						var x = 0;
-						request('http:' + href).pipe(fs.createWriteStream(name)).on('close', function () {
+						/*request('http:' + href).pipe(fs.createWriteStream(name)).on('close', function () {
 							x++;
 							if (x == posts.length) {
 								console.log("Done!");
 							}
+						});*/
+						dload.push({url: 'http:' + href, name: name}, function (err) {
+							console.log('Done!');
 						});
 					}
 				}
@@ -82,6 +98,7 @@ function scrape(url, redditor) {
 }
 var check;
 var len = 0;
+/*
 prompt.start();
 prompt.get('user', function (err, result) {
 	var follow = {};
@@ -128,5 +145,8 @@ prompt.get('user', function (err, result) {
 				req(user);
 			}
 		});
-	}, 120 * 60 * 1000);
+	}, 120 * 60 * 1000); // Every two hours
 });
+*/
+
+scrape('http://imgur.com/a/xq0an');
