@@ -1,13 +1,14 @@
 {
   "name": "deviant",
-  "version": "0.0.1",
+  "version": "0.1",
   "main": "deviant.js",
   "author": "Subnormal",
   "dependencies": {
     "async": "latest",
     "cheerio": "latest",
-    "express": "latest",
+    "form-data": "latest",
     "mkdirp": "latest",
+    "progress": "latest",
     "prompt": "latest",
     "request": "latest"
   }

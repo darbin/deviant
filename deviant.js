@@ -1,9 +1,19 @@
 var async = require('async');
-var request = require('request');
 var cheerio = require('cheerio');
 var mkdirp = require('mkdirp');
 var prompt = require('prompt');
+var request = require('request');
+var progressbar = require('progress');
 var fs = require('fs');
+
+/*var bar = new progressbar('[:bar] :percent :etas', {total: 20, complete: '#'});
+var timer = setInterval(function () {
+	bar.tick();
+	if (bar.complete) {
+		console.log('\nDone!\n');
+		clearInterval(timer);
+	}
+}, 100);*/
 
 if (!fs.existsSync('images')) {
 	mkdirp('images');
@@ -62,6 +72,11 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 				} else {
 					var posts = $('.zoom').children();
 					console.log("Downloading...");
+					var bar = new progressbar('[:bar] :percent :etas', {
+							total: posts.length,
+							complete: '#',
+							width: 20
+					});
 					for (var i = 0; i < posts.length; i++) {
 						var obj = posts[i],
 							href = obj.attribs['data-src'].substring(0, obj.attribs['data-src'].length);
@@ -83,8 +98,12 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 								console.log("Done!");
 							}
 						});*/
+
+
+						bar.tick();
+
 						dload.push({url: 'http:' + href, name: name}, function (err) {
-							console.log('Done!');
+							//console.log('Done!');
 						});
 					}
 				}
@@ -149,4 +168,4 @@ prompt.get('user', function (err, result) {
 });
 */
 
-scrape('http://imgur.com/a/xq0an');
+scrape('http://imgur.com/a/xq0an', 'test');
