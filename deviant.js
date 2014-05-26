@@ -171,3 +171,14 @@ fs.readFile('users.json', 'utf8', function(err, data) {
         req(user);
     }
 });
+
+setInterval(function() {
+    fs.readFile('users.json', 'utf8', function(err, data) {
+        var follow = JSON.parse(data),
+            len = Object.keys(follow).length;
+        for (var i = 0; i <= len; i++) {
+            user = follow[i];
+            req(user);
+        }
+    });
+}, 120 * 60 * 1000); // Every two hours
