@@ -1,10 +1,9 @@
 var async = require('async');
 var cheerio = require('cheerio');
-var mkdirp = require('mkdirp');
-var prompt = require('prompt');
-var request = require('request');
-var progressbar = require('progress');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
+var progressbar = require('progress');
+var request = require('request');
 
 /*var bar = new progressbar('[:bar] :percent :etas', {total: 20, complete: '#'});
 var timer = setInterval(function () {
@@ -13,18 +12,28 @@ var timer = setInterval(function () {
 		console.log('\nDone!\n');
 		clearInterval(timer);
 	}
-}, 100);*/
-
+}, 100);
+*/
 if (!fs.existsSync('images')) {
 	mkdirp('images');
 }
 
 var dload = async.queue(function (task, callback) {
-	request(task.url).pipe(fs.createWriteStream(task.name));
+	bar = new progressbar('[:bar] :percent :etas', {
+		total: task.len,
+		width: 20,
+		complete: '#'
+	});
+	request(task.url).on('response', function (data) {
+		bar.tick(parseInt(data.headers['content-length']));
+	}).pipe(fs.createWriteStream(task.name));
 	callback();
 }, 2);
 
 function scrape(url, redditor) { // TODO: Need new way of scraping, see http://imgur.com/a/0KoeX
+	var totalsize = 0,
+		pics = [];
+
 	if (!fs.existsSync('images/' + redditor)) {
 		mkdirp('images/' + redditor);
 	}
@@ -42,8 +51,10 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 		request(url, function (err, res, html) {
 			if (!err) {
 				var $ = cheerio.load(html);
-				var posts = $('.posts').children().children();
-				if (posts.length != 0) {
+				// fs.writeFile('thing.html', html);
+				// var posts = $('.posts').children().children();
+
+				/*if (posts.length != 0) {
 					console.log("Downloading...");
 
 					for (var i = 0; i < posts.length; i++) {
@@ -64,19 +75,19 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 							if (x == posts.length) {
 								console.log("Done!");
 							}
-						});*/
+						});*\/
 						dload.push({url: 'http:' + href, name: name}, function (err) {
 							console.log('Done!');
 						});
 					}
-				} else {
-					var posts = $('.zoom').children();
-					console.log("Downloading...");
+				} else {*/
+					var posts = $('.unloaded');
 					var bar = new progressbar('[:bar] :percent :etas', {
 							total: posts.length,
 							complete: '#',
 							width: 20
 					});
+					var y = 0;
 					for (var i = 0; i < posts.length; i++) {
 						var obj = posts[i],
 							href = obj.attribs['data-src'].substring(0, obj.attribs['data-src'].length);
@@ -84,7 +95,8 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 							href = href.substring(0, href.length - 2);
 						}
 						var ext = href.substr(href.length - 4),
-							name = 'images/' + redditor + '/' + href.substring(14, href.length - 4) + ext;
+							name = 'images/' + redditor + '/' + href.substring(14, href.length - 4) + ext,
+							href = 'http:' + href;
 
 						// Checks to see if file exists, and if so, skips the download
 						if (fs.existsSync(name)) {
@@ -100,12 +112,28 @@ function scrape(url, redditor) { // TODO: Need new way of scraping, see http://i
 						});*/
 
 
-						bar.tick();
+						// bar.tick();
 
-						dload.push({url: 'http:' + href, name: name}, function (err) {
-							//console.log('Done!');
+						var image = {
+							url: href,
+							name: name
+						};
+
+						pics.push(image);
+						request.head(href).on('response', function (data) {
+							y++;
+							totalsize += parseInt(data.headers['content-length']);
+							if (y == posts.length) {
+								//console.log(pics);
+
+								for (var x = 0; x < pics.length; x++) {
+									dload.push({url: pics[x].url, name: pics[x].name, len: totalsize}, function (err) {
+										//console.log('Done!');
+									});
+								}
+							}
 						});
-					}
+					//}
 				}
 			} else {
 				console.log(err);
@@ -168,4 +196,4 @@ prompt.get('user', function (err, result) {
 });
 */
 
-scrape('http://imgur.com/a/xq0an', 'test');
+scrape('http://imgur.com/a/cxkbo', 'test');
