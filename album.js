@@ -30,10 +30,10 @@ function AlbumRip(url) {
         mkdirp('images/' + url.substring(19));
     }
 
-    request(url, function(err, res, html) {
+    request(url + '/noscript', function(err, res, html) {
         if (!err) {
             var $ = cheerio.load(html);
-            var posts = $('img[class=unloaded][class!=thumb-title]');
+            var posts = $('div[class=image]').children().children().children();
             var bar = new progressbar('[:bar] :percent :etas', {
                 total: posts.length,
                 complete: '#',
@@ -42,7 +42,7 @@ function AlbumRip(url) {
             var y = 0;
             for (var i = 0; i < posts.length; i++) {
                 var obj = posts[i],
-                    href = obj.attribs['data-src'].substring(0, obj.attribs['data-src'].length);
+                    href = obj.attribs['src'].substring(0, obj.attribs['src'].length);
                 if (!isNaN(href.substr(href.length - 1))) {
                     href = href.substring(0, href.length - 2);
                 }
@@ -83,7 +83,4 @@ function AlbumRip(url) {
     });
 }
 
-prompt.start();
-prompt.get('album', function(err, result) {
-    AlbumRip(result.album);
-});
+AlbumRip(process.argv[2]);

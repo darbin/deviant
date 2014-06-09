@@ -21,14 +21,18 @@ var dload = async.queue(function(task, callback) {
     callback();
 }, 2);
 
-function AlbumRip(url, redditor) {
+function AlbumRip(url) {
     var totalsize = 0,
         pics = [];
 
-    request(url, function(err, res, html) {
+    if (!fs.existsSync('images/' + url.substring(19))) {
+        mkdirp('images/' + url.substring(19));
+    }
+
+    request(url + '/noscript', function(err, res, html) {
         if (!err) {
             var $ = cheerio.load(html);
-            var posts = $('img[class=unloaded][class!=thumb-title]');
+            var posts = $('div[class=image]').children().children().children();
             var bar = new progressbar('[:bar] :percent :etas', {
                 total: posts.length,
                 complete: '#',
@@ -37,7 +41,7 @@ function AlbumRip(url, redditor) {
             var y = 0;
             for (var i = 0; i < posts.length; i++) {
                 var obj = posts[i],
-                    href = obj.attribs['data-src'].substring(0, obj.attribs['data-src'].length);
+                    href = obj.attribs['src'].substring(0, obj.attribs['src'].length);
                 if (!isNaN(href.substr(href.length - 1))) {
                     href = href.substring(0, href.length - 2);
                 }
