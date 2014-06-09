@@ -33,7 +33,7 @@ function AlbumRip(url) {
     request(url + '/noscript', function(err, res, html) {
         if (!err) {
             var $ = cheerio.load(html);
-            var posts = $('div[class=image]').children().children().children();
+            var posts = $('img').parent('div[class=wrapper], a[class=zoom]').children();
             var bar = new progressbar('[:bar] :percent :etas', {
                 total: posts.length,
                 complete: '#',
