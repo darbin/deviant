@@ -47,7 +47,7 @@ function AlbumRip(url) {
                     href = href.substring(0, href.length - 2);
                 }
                 var ext = href.substr(href.length - 4),
-                    name = 'images/' + url.substring(19) + '/' + href.substring(14, href.length - 4) + ext,
+                    name = 'images/' + url.substring(19) + '/' + i + ' - ' + href.substring(14, href.length - 4) + ext,
                     href = 'http:' + href;
 
                 // Checks to see if file exists, and if so, skips the download
