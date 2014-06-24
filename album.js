@@ -23,12 +23,19 @@ var dload = async.queue(function(task, callback) {
 }, 2);
 
 function AlbumRip(url) {
-    var totalsize = 0,
-        pics = [];
+    var dir = false;
 
-    if (!fs.existsSync('images/' + url.substring(19))) {
+    if (process.argv[3] != null) {
+        dir = true;
+        if (!fs.existsSync(process.argv[3])) {
+            mkdirp(process.argv[3]);
+        }
+    } else if (!fs.existsSync('images/' + url.substring(19))) {
         mkdirp('images/' + url.substring(19));
     }
+
+    var totalsize = 0,
+        pics = [];
 
     request(url + '/noscript', function(err, res, html) {
         if (!err) {
@@ -47,8 +54,13 @@ function AlbumRip(url) {
                     href = href.substring(0, href.length - 2);
                 }
                 var ext = href.substr(href.length - 4),
-                    name = 'images/' + url.substring(19) + '/' + i + ' - ' + href.substring(14, href.length - 4) + ext,
                     href = 'http:' + href;
+
+                if (!dir) {
+                    name = 'images/' + url.substring(19) + '/' + i + ' - ' + href.substring(14, href.length - 4) + ext;
+                } else {
+                    name = process.argv[3] + '/' + i + ' - ' + href.substring(19, href.length - 4) + ext;
+                }
 
                 // Checks to see if file exists, and if so, skips the download
                 if (fs.existsSync(name)) {

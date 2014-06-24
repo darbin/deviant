@@ -24,6 +24,8 @@ Then run `node deviant.js`.
 
 To use album.js, run `node album.js [album url]`.
 
+You can also output to a custom folder if you wish, by running `node album.js [album url] [location]`.
+
 
 Known issues:
 -------------
