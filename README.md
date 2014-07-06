@@ -6,7 +6,7 @@ Rips imgur albums and reddit accounts. Can "follow" accounts and update stored i
 How to use:
 -----------
 
-First you need [node](https://nodejs.org/) installed. Download and open this folder in your command line, then run `npm install` to install the dependencies.
+First you need [Node.js](https://nodejs.org/) installed. Download and open this folder in your command line, then run `npm install` to install the dependencies.
 
 Make sure you have added your users to users.json, replacing the example. It should look like this:
 
