@@ -22,7 +22,7 @@ var dload = async.queue(function(task, callback) {
         bar.tick(parseInt(data.headers['content-length']));
     }).pipe(fs.createWriteStream(task.name));
     callback();
-}, 2);
+}, 5);
 
 function AlbumRip(url) {
     var dir = false;
