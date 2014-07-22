@@ -62,7 +62,7 @@ function AlbumRip(url) {
 
                 // File naming
                 if (!dir) {
-                    name = 'images/' + url.substring(19) + '/' + i + ' - ' + href.substring(14, href.length - 4) + ext;
+                    name = 'images/' + url.substring(19) + '/' + i + ' - ' + href.substring(19, href.length - 4) + ext;
                 } else {
                     name = process.argv[3] + '/' + i + ' - ' + href.substring(19, href.length - 4) + ext;
                 }
